@@ -46,6 +46,15 @@ if login():
 
     df = cargar_datos()
 
+    # Barra de búsqueda opcional
+    busqueda = st.text_input("Buscar aliado por nombre (opcional):")
+
+    # Si hay texto en la barra, mostrar resultados
+    if busqueda:
+    resultados = df[df['Aliados'].astype(str).str.contains(busqueda, case=False, na=False)]
+    st.write(f"{len(resultados)} resultado(s) encontrado(s) para: **{busqueda}**")
+    st.dataframe(resultados)
+
     enfoques = sorted(set(e.strip().lower() for lista in df["Enfoque"].dropna() for e in str(lista).split(",")))
     ubicaciones = sorted(set(u.strip().lower() for lista in df["Ubicación"].dropna() for u in str(lista).split(",")))
     acciones = sorted(df["Nivel de acción"].dropna().astype(str).unique().tolist())
