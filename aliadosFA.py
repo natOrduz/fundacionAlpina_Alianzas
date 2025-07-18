@@ -51,9 +51,9 @@ if login():
 
     # Si hay texto en la barra, mostrar resultados
     if busqueda:
-    resultados = df[df['Aliados'].astype(str).str.contains(busqueda, case=False, na=False)]
-    st.write(f"{len(resultados)} resultado(s) encontrado(s) para: **{busqueda}**")
-    st.dataframe(resultados)
+        resultados = df[df['Aliados'].astype(str).str.contains(busqueda, case=False, na=False)]
+        st.write(f"{len(resultados)} resultado(s) encontrado(s) para: **{busqueda}**")
+        st.dataframe(resultados)
 
     enfoques = sorted(set(e.strip().lower() for lista in df["Enfoque"].dropna() for e in str(lista).split(",")))
     ubicaciones = sorted(set(u.strip().lower() for lista in df["Ubicación"].dropna() for u in str(lista).split(",")))
