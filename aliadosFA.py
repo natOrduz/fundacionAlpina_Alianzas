@@ -68,17 +68,17 @@ if login():
         aliado = resultados.iloc[0]
         st.markdown(f"✅ **{aliado['Nombre de la organización']}**")
         with st.expander("Más información"):
-            st.markdown(f"- **Areas de trabajo:** {aliado['Areas de trabajo']}")
-            st.markdown(f"- **Territorios de operación:** {aliado['Territorios de operación']}")
-            st.markdown(f"- **Tipo de organización:** {aliado['Tipo de organización']}")
-            st.markdown(f"- **Historial con la Fundación:** {aliado['Historial con la Fundación']}")
-            st.markdown(f"- **Última colaboración:** {aliado['Última colaboración']}")
-            st.markdown(f"- **Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
-            st.markdown(f"- **Persona de contacto:** {aliado['Persona de contacto']}")
-            st.markdown(f"\tCargo: {aliado['Cargo de la persona de contacto']}")
-            st.markdown(f"\tCorreo: {aliado['Correo']}")
-            st.markdown(f"\tNúmero de contacto: {aliado['Número de persona de contacto']}")
-            st.markdown(f"- **Origen del contacto:** {aliado['Origen del contacto']}")
+            st.markdown(f"**Areas de trabajo:** {aliado['Areas de trabajo']}")
+            st.markdown(f"**Territorios de operación:** {aliado['Territorios de operación']}")
+            st.markdown(f"**Tipo de organización:** {aliado['Tipo de organización']}")
+            st.markdown(f"**Historial con la Fundación:** {aliado['Historial con la Fundación']}")
+            st.markdown(f"**Última colaboración:** {aliado['Última colaboración']}")
+            st.markdown(f"**Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
+            st.markdown(f"**Persona de contacto:** {aliado['Persona de contacto']}")
+            st.markdown(f"- **Cargo:** {aliado['Cargo de la persona de contacto']}")
+            st.markdown(f"- **Correo:** {aliado['Correo']}")
+            st.markdown(f"- **Número de contacto:** {aliado['Número de persona de contacto']}")
+            st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
     
     elif cantidad > 1:
         opciones = resultados['Nombre de la organización'].unique().tolist()
