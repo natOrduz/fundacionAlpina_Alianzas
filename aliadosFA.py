@@ -19,18 +19,22 @@ def cargar_datos():
     df.columns = df.columns.str.strip()  # Quita espacios invisibles
     return df
 
-def busqueda_alianza(fila, enfoque, ubicacion, accion):
+def busqueda_alianza(fila, areasDeTrabajo, territoriosDeOp, tipoDeOrg):
     counter = 0
 
-    enfoques_aliado = [e.strip().lower() for e in str(fila["Enfoque"]).split(",")]
-    if enfoque == "Todas" or enfoque.strip().lower() in enfoques_aliado:
+    # Area de trabajo de la organización
+    areasDeTrabajo_aliado = [e.strip().lower() for e in str(fila["Areas de trabajo"]).split(",")]
+    if areasDeTrabajo == "Todas" or areasDeTrabajo.strip().lower() in areasDeTrabajo_aliado:
         counter += 1
 
-    ubicaciones_aliado = [u.strip().lower() for u in str(fila["Ubicación"]).split(",")]
-    if ubicacion == "Todas" or ubicacion.strip().lower() in ubicaciones_aliado:
+    # Territorios de operación de la organización
+    territoriosDeOp_aliado = [u.strip().lower() for u in str(fila["Territorios de operación"]).split(",")]
+    if territoriosDeOp == "Todas" or territoriosDeOp.strip().lower() in territoriosDeOp_aliado:
         counter += 1
 
-    if accion == "Todas" or str(fila["Nivel de acción"]).strip() == str(accion).strip():
+    # Tipo de organización - ej. fundación
+    tipoDeOrg_aliado = [u.strip().lower() for u in str(fila["Tipo de organización"]).split(",")]
+    if tipoDeOrg == "Todas" or tipoDeOrg.strip().lower() in tipoDeOrg_aliado:
         counter += 1
 
     return counter == 3
@@ -47,42 +51,95 @@ if login():
     df = cargar_datos()
 
     # Barra de búsqueda opcional
-    busqueda = st.text_input("Buscar aliado por nombre (opcional):")
+    st.subheader("***Buscar aliado por nombre***")
+    busqueda = st.text_input("(opcional)")
 
-    # Si hay texto en la barra, mostrar resultados
+    cantidad = 0
+    resultados = pd.DataFrame()
+
+    # Si hay texto en la barra, mostrar resultados - búsqueda específica
     if busqueda:
-        resultados = df[df['Aliados'].astype(str).str.contains(busqueda, case=False, na=False)]
-        st.write(f"{len(resultados)} resultado(s) encontrado(s) para: **{busqueda}**")
-        st.dataframe(resultados)
+        resultados = df[df['Nombre de la organización'].astype(str).str.contains(busqueda, case=False, na=False)]
+        cantidad = len(resultados)
+        st.write(f"{cantidad} resultado(s) encontrado(s) para: **{busqueda}**")
 
-    enfoques = sorted(set(e.strip().lower() for lista in df["Enfoque"].dropna() for e in str(lista).split(",")))
-    ubicaciones = sorted(set(u.strip().lower() for lista in df["Ubicación"].dropna() for u in str(lista).split(",")))
-    acciones = sorted(df["Nivel de acción"].dropna().astype(str).unique().tolist())
+    # Información/categorías que sale/se comunica al usuario tocar en el resultado de la búsqueda (el nombre)
+    if cantidad == 1:
+        aliado = resultados.iloc[0]
+        st.markdown(f"✅ **{aliado['Nombre de la organización']}**")
+        with st.expander("Más información"):
+            st.markdown(f"- **Areas de trabajo:** {aliado['Areas de trabajo']}")
+            st.markdown(f"- **Territorios de operación:** {aliado['Territorios de operación']}")
+            st.markdown(f"- **Tipo de organización:** {aliado['Tipo de organización']}")
+            st.markdown(f"- **Historial con la Fundación:** {aliado['Historial con la Fundación']}")
+            st.markdown(f"- **Última colaboración:** {aliado['Última colaboración']}")
+            st.markdown(f"- **Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
+            st.markdown(f"- **Persona de contacto:** {aliado['Persona de contacto']}")
+            st.markdown(f"\tCargo: {aliado['Cargo de la persona de contacto']}")
+            st.markdown(f"\tCorreo: {aliado['Correo']}")
+            st.markdown(f"\tNúmero de contacto: {aliado['Número de persona de contacto']}")
+            st.markdown(f"- **Origen del contacto:** {aliado['Origen del contacto']}")
+    
+    elif cantidad > 1:
+        opciones = resultados['Nombre de la organización'].unique().tolist()
+        aliado_seleccionado = st.selectbox("Selecciona un aliado:", opciones)
 
-    enfoques.insert(0, "Todas")
-    ubicaciones.insert(0, "Todas")
-    acciones.insert(0, "Todas")
+        if aliado_seleccionado:
+            aliado = resultados[resultados['Nombre de la organización'] == aliado_seleccionado].iloc[0]
+            st.markdown(f"✅ **{aliado['Nombre de la organización']}**")
+            with st.expander("Más información"):
+                st.markdown(f"**Areas de trabajo:** {aliado['Areas de trabajo']}")
+                st.markdown(f"**Territorios de operación:** {aliado['Territorios de operación']}")
+                st.markdown(f"**Tipo de organización:** {aliado['Tipo de organización']}")
+                st.markdown(f"**Historial con la Fundación:** {aliado['Historial con la Fundación']}")
+                st.markdown(f"**Última colaboración:** {aliado['Última colaboración']}")
+                st.markdown(f"**Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
+                st.markdown(f"**Persona de contacto:** {aliado['Persona de contacto']}")
+                st.markdown(f"- **Cargo de la persona de contacto:** {aliado['Cargo de la persona de contacto']}")
+                st.markdown(f"- **Correo de la persona de contacto:** {aliado['Correo']}")
+                st.markdown(f"- **Número de la persona de contacto:** {aliado['Número de persona de contacto']}")
+                st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
+    
+    else:
+        st.warning("No se encontraron aliados que coincidan.")
 
-    busqueda_enfoque = st.selectbox("Enfoque:", enfoques)
-    busqueda_ubicacion = st.selectbox("Ubicación:", ubicaciones)
-    busqueda_accion = st.selectbox("Nivel de acción:", acciones)
+    st.subheader("***Búsqueda a base de filtros***")
+
+    # Búsqueda a base de filtros
+    areas = sorted(set(e.strip().lower() for lista in df["Areas de trabajo"].dropna() for e in str(lista).split(",")))
+    territorios = sorted(set(u.strip().lower() for lista in df["Territorios de operación"].dropna() for u in str(lista).split(",")))
+    tipo = sorted(df["Tipo de organización"].dropna().astype(str).unique().tolist())
+
+    areas.insert(0, "Todas")
+    territorios.insert(0, "Todas")
+    tipo.insert(0, "Todas")
+
+    busqueda_areas = st.selectbox("Areas de trabajo:", areas)
+    busqueda_territorios = st.selectbox("Territorios de operación:", territorios)
+    busqueda_tipo = st.selectbox("Tipo de organización:", tipo) 
+
+    # Resultados de la búsqueda a base de filtros
 
     st.subheader("📋 Aliados disponibles:")
 
     resultados = []
 
     for _, fila in df.iterrows():
-        if busqueda_alianza(fila, busqueda_enfoque, busqueda_ubicacion, busqueda_accion):
+        if busqueda_alianza(fila, busqueda_areas, busqueda_territorios, busqueda_tipo):
             resultados.append(fila)
 
     if resultados:
         for aliado in resultados:
-            st.markdown(f"✅ **{aliado['Aliado']}**")
+            st.markdown(f"✅ **{aliado['Nombre de la organización']}**")
             with st.expander("Más información"):
-                st.markdown(f"- **Encargado/a:** {aliado['Encargado/a']}")
-                st.markdown(f"- **Historial con la Fundación:** {aliado['Historial con la Fundación']}")
-                st.markdown(f"- **Última colaboración:** {aliado['Última colaboración']}")
-                st.markdown(f"- **Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
+                st.markdown(f"**Historial con la Fundación:** {aliado['Historial con la Fundación']}")
+                st.markdown(f"**Última colaboración:** {aliado['Última colaboración']}")
+                st.markdown(f"**Veces colaboradas con la Fundación:** {aliado['Veces colaboradas con la Fundación']}")
+                st.markdown(f"**Persona de contacto:** {aliado['Persona de contacto']}")
+                st.markdown(f"- **Cargo:** {aliado['Cargo de la persona de contacto']}")
+                st.markdown(f"- **Correo:** {aliado['Correo']}")
+                st.markdown(f"- **Número de contacto:** {aliado['Número de persona de contacto']}")
+                st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
     else:
         st.warning("No se encontraron aliados con esos criterios.")
 else:
