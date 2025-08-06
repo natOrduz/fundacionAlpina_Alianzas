@@ -79,6 +79,7 @@ if login():
             st.markdown(f"- **Correo:** {aliado['Correo']}")
             st.markdown(f"- **Número de contacto:** {aliado['Número de persona de contacto']}")
             st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
+            st.markdown(f"**Presupuesto acordado:** {aliado['Presupuesto acordado']}")
     
     elif cantidad > 1:
         opciones = resultados['Nombre de la organización'].unique().tolist()
@@ -99,6 +100,7 @@ if login():
                 st.markdown(f"- **Correo de la persona de contacto:** {aliado['Correo']}")
                 st.markdown(f"- **Número de la persona de contacto:** {aliado['Número de persona de contacto']}")
                 st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
+                st.markdown(f"**Presupuesto acordado:** {aliado['Presupuesto acordado']}")
     
     else:
         st.warning("No se encontraron aliados que coincidan.")
@@ -140,6 +142,7 @@ if login():
                 st.markdown(f"- **Correo:** {aliado['Correo']}")
                 st.markdown(f"- **Número de contacto:** {aliado['Número de persona de contacto']}")
                 st.markdown(f"**Origen del contacto:** {aliado['Origen del contacto']}")
+                st.markdown(f"**Presupuesto acordado:** {aliado['Presupuesto acordado']}")
     else:
         st.warning("No se encontraron aliados con esos criterios.")
 else:
